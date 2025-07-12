@@ -46,9 +46,17 @@ const buttonClass = computed(() => {
 
 const filterNode = (value: string, data: Tree) => {
   if (!value) return true;
-  return data.name.includes(value);
+  return data.name.includes(value) || childInclude(value, data.children);
 };
-
+/** 任何一级子菜单的name包含 value*/
+function childInclude(value: string, data: Tree[]) {
+  if (!data) return false;
+  for (let i = 0; i < data.length; i++) {
+    if (filterNode(value, data[i])) return true;
+    if (childInclude(value, data[i].children)) return true;
+  }
+  return false;
+}
 function nodeClick(value) {
   const nodeId = value.$treeNodeId;
   highlightMap.value[nodeId] = highlightMap.value[nodeId]?.highlight
